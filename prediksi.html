@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prediksi Kelayakan Nasabah Berdasarkan Riwayat Pembayaran</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            margin-top: 50px;
+        }
+
+        .card {
+            border-radius: 15px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-body {
+            padding: 25px;
+        }
+
+        .card-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+
+        .form-label {
+            font-size: 1.2rem;
+        }
+
+        .form-select {
+            font-size: 1.1rem;
+            border-radius: 25px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border-color: #007bff;
+            border-radius: 25px;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+            border-color: #0056b3;
+        }
+
+        .result-card {
+            margin-top: 30px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .result-card h4 {
+            font-size: 1.5rem;
+            color: #28a745;
+        }
+
+        .result-card p {
+            font-size: 1.1rem;
+        }
+
+        .result-card .status {
+            font-weight: bold;
+        }
+
+        .status-layak {
+            color: green;
+        }
+
+        .status-tidak-layak {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center">Prediksi Kelayakan Nasabah</h2>
+
+                <!-- Form untuk memilih nasabah -->
+                <div class="mb-4">
+                    <label for="nasabahSelect" class="form-label">Pilih Nama Nasabah:</label>
+                    <select id="nasabahSelect" class="form-select" onchange="analyzeEligibility()">
+                        <option value="">-- Pilih Nasabah --</option>
+                    </select>
+                </div>
+
+                <!-- Hasil analisis kelayakan -->
+                <div id="result" class="result-card" style="display: none;">
+                    <!-- Hasil akan ditampilkan di sini -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        let nasabahData = []; // Variabel untuk menyimpan data nasabah
+
+        // Fungsi untuk memuat data dari file Excel
+        function loadExcelData() {
+            const url = 'Data Olahan.xlsx'; // Ganti dengan lokasi file Excel Anda
+
+            fetch(url)
+                .then(response => response.arrayBuffer())
+                .then(data => {
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const sheetName = workbook.SheetNames[0]; // Mengambil sheet pertama
+                    const sheet = workbook.Sheets[sheetName];
+                    nasabahData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                    populateNasabahSelect(); // Memasukkan data ke dropdown
+                })
+                .catch(error => console.error("Error loading Excel file:", error));
+        }
+
+        // Memasukkan nama nasabah ke dalam dropdown
+        function populateNasabahSelect() {
+            const nasabahSelect = document.getElementById("nasabahSelect");
+            nasabahData.forEach((row, index) => {
+                if (index > 0) { // Melewati baris pertama yang biasanya header
+                    const option = document.createElement("option");
+                    option.value = index;
+                    option.text = row[0]; // Mengambil nama nasabah dari kolom pertama
+                    nasabahSelect.add(option);
+                }
+            });
+        }
+
+        // Fungsi untuk menganalisis kelayakan nasabah
+        function analyzeEligibility() {
+            const selectedNasabahIndex = document.getElementById("nasabahSelect").value;
+            if (selectedNasabahIndex === "") {
+                document.getElementById("result").style.display = "none";
+                return;
+            }
+
+            const nasabah = nasabahData[selectedNasabahIndex];
+            fetch('/prediksi', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ nasabah_id: selectedNasabahIndex }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                displayResult(data);
+            });
+        }
+
+        // Menampilkan hasil prediksi kelayakan
+        function displayResult(data) {
+            const resultDiv = document.getElementById("result");
+            resultDiv.style.display = "block";
+
+            const statusClass = data.status_kelayakan === "Layak" ? "status-layak" : "status-tidak-layak";
+            resultDiv.innerHTML = `
+                <h4>Hasil Analisis Kelayakan</h4>
+                <p>Nama: ${data.nama}</p>
+                <p>Jumlah Pinjaman: Rp${data.jumlah_pinjaman.toLocaleString()}</p>
+                <p>Angsuran per Minggu: Rp${data.angsuran_minggu.toLocaleString()}</p>
+                <p>Pendapatan: Rp${data.pendapatan.toLocaleString()}</p>
+                <p>Pembayaran Tepat Waktu: ${data.pembayaran_tepat_waktu} kali</p>
+                <p>Pembayaran Terlambat: ${data.pembayaran_terlambat} kali</p>
+                <p class="status ${statusClass}">Status Kelayakan: <strong>${data.status_kelayakan}</strong></p>
+            `;
+        }
+
+        // Panggil fungsi untuk memuat data saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', loadExcelData);
+    </script>
+</body>
+</html>
