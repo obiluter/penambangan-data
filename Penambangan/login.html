@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #88d3e8, #3c6975);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        #login-container {
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 30px 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 350px;
+        }
+
+        #login-container img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: #ffffff50;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+
+        #login-container h2 {
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            color: #fff;
+            font-size: 14px;
+            text-align: left;
+        }
+
+        input {
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
+        }
+
+        button {
+            padding: 12px;
+            font-size: 16px;
+            background-color: #3c6975;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #2a4e57;
+        }
+
+        p {
+            color: #fff;
+            font-size: 14px;
+        }
+
+        a {
+            color: #a8e3ef;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="login-container">
+        <img src="pp.jpg" alt="User Icon">
+        <h2>Login</h2>
+        <form id="login-form">
+            <label for="username">Email ID</label>
+            <input type="text" id="username" name="username" placeholder="Enter your email" required>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required>
+            <button type="submit">LOGIN</button>
+        </form>
+        <p>Don't have an account? <a href="Daftar.html">Sign Up</a></p>
+    </div>
+
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Get users data from localStorage
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Validate user credentials
+            const user = users.find(user => user.username === username && user.password === password);
+
+            if (user) {
+                if (user.role === 'admin') {
+                    window.location.href = "dashboard.html";
+                } 
+            } else {
+                alert('Invalid username or password');
+            }
+        });
+    </script>
+</body>
+</html>
