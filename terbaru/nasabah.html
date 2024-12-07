@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daftar Nasabah</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+        }
+        .content {
+            margin-top: 50px;
+            padding: 30px;
+        }
+        .table-container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            overflow-x: auto;
+        }
+        .table th, .table td {
+            text-align: center;
+            white-space: nowrap;
+        }
+        .table th {
+            background-color: #555555;
+            color: #ffffff;
+        }
+        td:last-child {
+            text-align: left;
+        }
+        .status-lunas {
+            color: green;
+            font-weight: bold;
+        }
+        .status-macet {
+            color: red;
+            font-weight: bold;
+        }
+        .action-column {
+            width: 150px;
+        }
+        .table {
+            width: 100%;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        .search-input {
+            width: 300px;
+        }
+        .btn-custom {
+            background-color: #555555;
+            color: white;
+        }
+        .btn-custom:hover {
+            background-color: #333333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container content">
+        <h2 class="mb-4 text-center">Data Nasabah</h2>
+
+        <!-- Pencarian -->
+        <div class="search-bar d-flex justify-content-center">
+            <input type="text" id="searchInput" class="form-control search-input" placeholder="Cari berdasarkan Nama atau Status...">
+        </div>
+
+        <div class="table-container">
+            <button class="btn btn-custom mb-3" data-bs-toggle="modal" data-bs-target="#addModal">Tambah Nasabah</button>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>NO</th>
+                        <th>Nama</th>
+                        <th>Pekerjaan</th>
+                        <th>Alamat</th>
+                        <th>Pendapatan</th>
+                        <th>Jumlah Pinjaman</th>
+                        <th>Bunga (20%)</th>
+                        <th>Angsuran / Minggu</th>
+                        <th>Tanggal Pinjaman</th>
+                        <th>Total Minggu</th>
+                        <th>P. Tepat Waktu</th>
+                        <th>P. Terlambat</th>
+                        <th>Status Pinjaman</th>
+                        <th class="action-column">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="nasabahTableBody">
+                    <!-- Data akan dimuat otomatis dari file Excel -->
+                </tbody>
+            </table>
+        </div>
+        <a href="index.html" class="btn btn-custom mt-4">Back to Home</a>
+    </div>
+
+    <!-- Modal Tambah/Edit Nasabah -->
+    <div class="modal fade" id="addModal" tabindex="-1" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Tambah Data Nasabah</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="addForm">
+                        <input type="hidden" id="editIndex" value="-1">
+                        <div class="mb-3">
+                            <label for="addName" class="form-label">Nama</label>
+                            <input type="text" class="form-control" id="addName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addJob" class="form-label">Pekerjaan</label>
+                            <input type="text" class="form-control" id="addJob" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addAddress" class="form-label">Alamat</label>
+                            <input type="text" class="form-control" id="addAddress" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addIncome" class="form-label">Pendapatan</label>
+                            <input type="number" class="form-control" id="addIncome" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addLoan" class="form-label">Jumlah Pinjaman</label>
+                            <input type="number" class="form-control" id="addLoan" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addLoanDate" class="form-label">Tanggal Pinjaman</label>
+                            <input type="date" class="form-control" id="addLoanDate" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addWeeks" class="form-label">Total Minggu</label>
+                            <input type="number" class="form-control" id="addWeeks" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="addOnTime" class="form-label">P. Tepat Waktu</label>
+                            <input type="number" class="form-control" id="addOnTime">
+                        </div>
+                        <div class="mb-3">
+                            <label for="addLate" class="form-label">P. Terlambat</label>
+                            <input type="number" class="form-control" id="addLate">
+                        </div>
+                        <div class="mb-3">
+                            <label for="addStatus" class="form-label">Status</label>
+                            <select class="form-select" id="addStatus" required>
+                                <option value="Lunas">Lunas</option>
+                                <option value="Macet">Macet</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-custom">Simpan</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script>
+        let nasabahData = [];
+
+        function excelDateToJSDate(serial) {
+            const excelStartDate = new Date(1900, 0, 1);
+            const jsDate = new Date(excelStartDate.getTime() + (serial - 1) * 24 * 60 * 60 * 1000);
+            return jsDate.toISOString().split('T')[0];
+        }
+
+        function formatRupiah(angka) {
+            return 'Rp. ' + angka.toLocaleString('id-ID', { style: 'decimal', minimumFractionDigits: 0 });
+        }
+
+        function loadExcelData() {
+            fetch('Data Olahan4.xlsx')
+                .then(response => response.arrayBuffer())
+                .then(data => {
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                    jsonData.slice(1).forEach(row => {
+                        const pinjaman = Number(row[4] || 0);
+                        const totalMinggu = Number(row[8] || 1);
+                        nasabahData.push({
+                            nama: row[0],
+                            pekerjaan: row[1],
+                            alamat: row[2],
+                            pendapatan: Number(row[3] || 0),
+                            pinjaman: pinjaman,
+                            bunga: formatRupiah(pinjaman * 0.2),
+                            angsuran: formatRupiah(pinjaman * 1.2 / totalMinggu),
+                            tanggalPinjaman: excelDateToJSDate(row[7]),
+                            totalMinggu: totalMinggu,
+                            tepatWaktu: row[9] || 0,
+                            terlambat: row[10] || 0,
+                            status: row[11] || 'Macet',
+                        });
+                    });
+
+                    renderTable(nasabahData);
+                });
+        }
+
+        function renderTable(data = nasabahData) {
+            const tableBody = document.getElementById("nasabahTableBody");
+            tableBody.innerHTML = '';
+            data.forEach((nasabah, index) => {
+                const row = document.createElement("tr");
+
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${nasabah.nama}</td>
+                    <td>${nasabah.pekerjaan}</td>
+                    <td>${nasabah.alamat}</td>
+                    <td>${formatRupiah(nasabah.pendapatan)}</td>
+                    <td>${formatRupiah(nasabah.pinjaman)}</td>
+                    <td>${nasabah.bunga}</td>
+                    <td>${nasabah.angsuran}</td>
+                    <td>${nasabah.tanggalPinjaman}</td>
+                    <td>${nasabah.totalMinggu}</td>
+                    <td>${nasabah.tepatWaktu}</td>
+                    <td>${nasabah.terlambat}</td>
+                    <td class="${nasabah.status === 'Lunas' ? 'status-lunas' : 'status-macet'}">${nasabah.status}</td>
+                    <td class="action-column">
+                        <button class="btn btn-warning" onclick="editNasabah(${index})">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteNasabah(${index})">Delete</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        function editNasabah(index) {
+            const nasabah = nasabahData[index];
+            document.getElementById('editIndex').value = index;
+            document.getElementById('addName').value = nasabah.nama;
+            document.getElementById('addJob').value = nasabah.pekerjaan;
+            document.getElementById('addAddress').value = nasabah.alamat;
+            document.getElementById('addIncome').value = nasabah.pendapatan;
+            document.getElementById('addLoan').value = nasabah.pinjaman;
+            document.getElementById('addLoanDate').value = nasabah.tanggalPinjaman;
+            document.getElementById('addWeeks').value = nasabah.totalMinggu;
+            document.getElementById('addOnTime').value = nasabah.tepatWaktu;
+            document.getElementById('addLate').value = nasabah.terlambat;
+            document.getElementById('addStatus').value = nasabah.status;
+            var myModal = new bootstrap.Modal(document.getElementById('addModal'), {});
+            myModal.show();
+        }
+
+        function deleteNasabah(index) {
+            if (confirm('Apakah Anda yakin ingin menghapus data nasabah ini?')) {
+                nasabahData.splice(index, 1);
+                renderTable();
+            }
+        }
+
+        document.getElementById('addForm').addEventListener('submit', function (event) {
+            event.preventDefault();
+            const index = document.getElementById('editIndex').value;
+            const nasabah = {
+                nama: document.getElementById('addName').value,
+                pekerjaan: document.getElementById('addJob').value,
+                alamat: document.getElementById('addAddress').value,
+                pendapatan: Number(document.getElementById('addIncome').value),
+                pinjaman: Number(document.getElementById('addLoan').value),
+                bunga: formatRupiah(Number(document.getElementById('addLoan').value) * 0.2),
+                angsuran: formatRupiah(Number(document.getElementById('addLoan').value) * 1.2 / Number(document.getElementById('addWeeks').value)),
+                tanggalPinjaman: document.getElementById('addLoanDate').value,
+                totalMinggu: Number(document.getElementById('addWeeks').value),
+                tepatWaktu: Number(document.getElementById('addOnTime').value),
+                terlambat: Number(document.getElementById('addLate').value),
+                status: document.getElementById('addStatus').value
+            };
+
+            if (index === '-1') {
+                nasabahData.push(nasabah);
+            } else {
+                nasabahData[index] = nasabah;
+            }
+
+            renderTable(nasabahData);
+            document.getElementById('addForm').reset();
+            var myModal = new bootstrap.Modal(document.getElementById('addModal'), {});
+            myModal.hide();
+        });
+
+        document.getElementById('searchInput').addEventListener('input', function () {
+            const searchValue = this.value.toLowerCase();
+            const filteredData = nasabahData.filter(nasabah => {
+                return nasabah.nama.toLowerCase().includes(searchValue) ||
+                       nasabah.status.toLowerCase().includes(searchValue);
+            });
+            renderTable(filteredData);
+        });
+
+        window.onload = function () {
+            loadExcelData();
+        };
+    </script>
+</body>
+</html>

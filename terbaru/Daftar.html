@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halaman Registrasi Akun Admin</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #607D8B, #455A64); /* Blue-grey gradient */
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+        }
+
+        #register-container {
+            background-color: rgba(255, 255, 255, 0.9); /* Light grey background */
+            padding: 40px 50px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            width: 400px;
+            max-width: 100%;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        #register-container:hover {
+            transform: scale(1.03);
+        }
+
+        h2 {
+            color: #333; /* Dark text color for the heading */
+            font-size: 2.2em;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        label {
+            font-size: 16px;
+            text-align: left;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333; /* Dark text for labels */
+        }
+
+        input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #f0f0f0; /* Light grey input background */
+            color: #333;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #607D8B;
+            box-shadow: 0 0 8px rgba(96, 125, 139, 0.4); /* Blue-grey focus shadow */
+        }
+
+        button {
+            padding: 14px;
+            font-size: 16px;
+            background-color: #607D8B; /* Blue-grey button color */
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #455A64; /* Darker blue-grey on hover */
+        }
+
+        p {
+            font-size: 14px;
+            color: #333; /* Dark text for paragraph */
+        }
+
+        a {
+            color: #607D8B; /* Blue-grey link color */
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 480px) {
+            #register-container {
+                width: 90%;
+                padding: 30px 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="register-container">
+        <h2>📚 User Sign Up</h2>
+        <form id="register-form">
+            <label for="new-username">Username</label>
+            <input type="text" id="new-username" name="new-username" placeholder="Enter your username" required>
+            
+            <label for="new-password">Password</label>
+            <input type="password" id="new-password" name="new-password" placeholder="Enter your password" required>
+            
+            <label for="new-email">Email</label>
+            <input type="email" id="new-email" name="new-email" placeholder="Enter your email" required>
+            
+            <button type="submit">Sign Up</button>
+        </form>
+        <p>Already have an account? <a href="login.html">Sign In</a></p>
+    </div>
+
+    <script>
+        document.getElementById('register-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('new-username').value;
+            const password = document.getElementById('new-password').value;
+            const email = document.getElementById('new-email').value;
+
+            // Retrieve existing users or initialize as an empty array
+            let users = JSON.parse(localStorage.getItem('users')) || [];
+            
+            // Add new user as admin
+            users.push({ username, password, email, role: 'admin' });
+            
+            // Save updated users array to localStorage
+            localStorage.setItem('users', JSON.stringify(users));
+            
+            alert('Registration successful! You can now login as admin.');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>
